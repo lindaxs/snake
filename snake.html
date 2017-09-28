@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Snake</title>
+    <!-- 
+          rel = relationship; css is a style sheet; href = hypertext reference, where the code is located
+          i used the path found in github, this is an absolute path, vs relative which is from remote
+          cannot be seen
+          ***typically type="text/css" is included, may remove if it causes issues 
+    -->
+    <link rel="stylesheet" type="text/css" href="https://github.com/lindaxs/snake/css/snake.css">
+    <!--
+       to link javascript files, the tag used is <script> and </script> to close and src = source to link to jquery,
+      also an absolute path 
+    -->
+    <script language="JavaScript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  </head>
+  <body>
+  <!--
+    if wanted to test locally, "link" has to be to where the file exists in your own directory, relative to
+    the html file; for example,
+    you have directory "snake", cd snake, ls --> "css js snake.html", the script link would now be
+    script src="js/snake.js" /script
+    **excluded angle brackets because forgot how to esc angle brackets to include in comments
+  -->
+    <script src="https://github.com/lindaxs/snake/js/snake.js"></script>
+  </body>
+</html>
