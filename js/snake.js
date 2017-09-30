@@ -28,7 +28,7 @@ function init() {
 	width = canvas.width
 	height = canvas.height
 	// starting position of snake
-	position = new Coordinate(width/2 ,height/2) 
+	position = new Coordinate(width/2, height/2) 
 
 }
 
