@@ -4,6 +4,10 @@ var canvas, ctx, width, height;
 var position; // x, y coordinates of snake head
 var direction; // direction of snake movement, dependent on key press
 
+var left = false;
+var right = false;
+var up = false;
+var down = false;
 
 const side = 20; // size of each box's side
 
@@ -18,15 +22,13 @@ class Coordinate {
 	}
 }
 
-var left = false;
-var right = false;
-var up = false;
-var down = false;
 
+/* Gets canvas from html and puts in 2d context */
 function initializeCanvas() {
 	canvas = document.getElementById("canvas");
 	ctx = canvas.getContext("2d");
 }
+
 
 /* Initialize canvas from html. */
 function init() {
@@ -36,6 +38,7 @@ function init() {
 	// starting position of snake
 	position = new Coordinate(width/2, height/2) 
 }
+
 
 /* Update position of snake. 
  * progress: variable of movement by _px
@@ -48,6 +51,7 @@ function update(progress) {
   updateDirection();
   move(progress);
 }
+
 
 /* This function adds movement to the snake in a given direction
  * progress denotes movement value in px
@@ -66,6 +70,7 @@ function move(progress) {
     position.x += progress;
   }
 }
+
 
 /* This function updates snake's direction */
 function updateDirection() {
@@ -99,7 +104,8 @@ function updateDirection() {
   }); // snake's current direction
 }
 
-/* resets the game when snake dies */
+
+/* Resets the game when snake dies */
 function resetGame() {
 
   // clear screen and reset coordinates
@@ -117,6 +123,7 @@ function resetGame() {
   left = false;
   right = false;
 }
+
 
 /* Currently checks whether the snake has hit a wall */
 function isDead() {
@@ -157,6 +164,7 @@ function createMap() {
   }
 }
 
+
 /* Draw the map and snake. */
 function draw() {
 
@@ -168,6 +176,7 @@ function draw() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 }
 
+
 /* Main loop that updates position of snake and redraws. 
  *  timestamp: current time 
  */
@@ -175,10 +184,11 @@ function loop() {
 
 	// TODO: should be updating by 20 units at a time
 	// Need to slow Animation frame rate or it is too fast
-  update(1); // currently moves to the right
+  update(3); // currently moves to the right
   draw();
   window.requestAnimationFrame(loop);
 }
+
 
 init();
 window.requestAnimationFrame(loop);
