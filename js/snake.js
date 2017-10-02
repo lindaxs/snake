@@ -4,6 +4,7 @@ var canvas, ctx, width, height;
 var position; // x, y coordinates of snake head
 var direction; // direction of snake movement, dependent on key press
 
+
 const side = 20; // size of each box's side
 
 /* Coordinate class
@@ -16,6 +17,11 @@ class Coordinate {
 		this.y = y;
 	}
 }
+
+var left = false;
+var right = false;
+var up = false;
+var down = false;
 
 function initializeCanvas() {
 	canvas = document.getElementById("canvas");
@@ -32,24 +38,118 @@ function init() {
 }
 
 /* Update position of snake. 
-* progress: direction of movement?
-*/
+ * progress: variable of movement by _px
+ */
 function update(progress) {
-  position.x += progress;
-  // Game over possibilities
-  if (position.x > (width - side)) {
-    // Game over
+  if ( isDead() ) {
+    resetGame(); 
+  }
+
+  updateDirection();
+  move(progress);
+}
+
+/* This function adds movement to the snake in a given direction
+ * progress denotes movement value in px
+ */
+function move(progress) {
+  if (up) {
+    position.y -= progress;
+  }
+  else if (down) {
+    position.y += progress;
+  }
+  else if (left) {
+    position.x -= progress;
+  }
+  else if (right) {
+    position.x += progress;
   }
 }
+
+/* This function updates snake's direction */
+function updateDirection() {
+  document.addEventListener('keydown', function(event) {
+
+    if (event.keyCode == 38) { 
+      up = true;
+      down = false;
+      left = false;
+      right = false;
+    } // up
+    else if (event.keyCode == 40) { 
+      up = false;
+      down = true;
+      left = false;
+      right = false;
+    } // down
+    else if (event.keyCode == 37) { 
+      up = false;
+      down = false;
+      left = true;
+      right = false;
+    } // left
+    else if (event.keyCode == 39) {
+      up = false;
+      down = false;
+      left = false;
+      right = true;
+    } // right
+
+  }); // snake's current direction
+}
+
+/* resets the game when snake dies */
+function resetGame() {
+
+  // clear screen and reset coordinates
+  ctx.clearRect(0, 0, width, height);
+  position.x = width/2;
+  position.y = height/2;
+
+  // reposition snake
+  ctx.fillStyle = 'red';
+  ctx.fillRect(position.x - 10, position.y - 10, side, side);
+
+  // reset directions
+  up = false;
+  down = false;
+  left = false;
+  right = false;
+}
+
+/* Currently checks whether the snake has hit a wall */
+function isDead() {
+  var borderLen = 10 + side;
+
+  // these denote the position of the wall
+  var leftWall = borderLen;
+  var rightWall = width - borderLen;
+  var topWall = height - borderLen;
+  var bottomWall = borderLen;
+
+  if (position.x == leftWall || position.x == rightWall) {
+    return true;
+  } // snake hits left or right wall
+ 
+  if (position.y == topWall || position.y == bottomWall) {
+    return true;
+  } // snake hits top or bottom wall
+
+  return false; // snake is not dead
+}
+
 
 /* Create the map borders, called by draw. */
 function createMap() {
 	ctx.fillStyle = 'black';
+
   // Create top and bottom borders.
-  for (i = 0; i < width; i+=side) {
+  for (i = 0; i < width; i += side) {
     ctx.fillRect(i, 0, side, side);
     ctx.fillRect(i, height-side, side, side);
   }
+
   // Create left and right borders.
   for (i = 0; i < height; i+=side) {
     ctx.fillRect(0, i, side, side);
@@ -62,14 +162,15 @@ function draw() {
 
   ctx.clearRect(0, 0, width, height);
   createMap();
+
   // Draw snake (so far only one square).
   ctx.fillStyle = 'red';
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 }
 
 /* Main loop that updates position of snake and redraws. 
-* timestamp: current time 
-*/
+ *  timestamp: current time 
+ */
 function loop() {
 
 	// TODO: should be updating by 20 units at a time
