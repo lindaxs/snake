@@ -170,7 +170,6 @@ function createMap() {
   }
 }
 
-
 /* Draw the map and snake. */
 function draw() {
 
@@ -182,39 +181,24 @@ function draw() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 }
 
-// var framesThisSecond = 0;
-// var lastFpsUpdate = 0;
-// var timestep = 1000 / 60;
-// var fps = 60;
-// var delta = 0;
-// var lastRender = 0;
-// var counter = 0;
-// var framesToSkip = 60;
+var counter = 0;
+var framesToSkip = 10;
 
 /* Main loop that updates position of snake and redraws. 
  *  timestamp: current time 
  */
 function loop(timestamp) {
 
-	// TODO: should be updating by 20 units at a time
-	// Need to slow Animation frame rate or it is too fast
-  // if (counter < framesToSkip) {
-  //   counter++;
-  update(3);
-  //   requestAnimationFrame(loop);
-  //   return;
-  // }
-  // if (timestamp < lastRender + (1000 / fps)) {
-  //   requestAnimationFrame(loop);
-  //   return;
-  // }
-  // delta += timestamp - lastRender;
-  // lastRender = timestamp;
+	// To advance the snake 20 units, we only update the 
+  // snake every 10 frames. 
+  if (counter < framesToSkip) {
+    counter++;
+    requestAnimationFrame(loop);
+    draw();
+    return; // do not proceed until 10th frame
+  }
+  update(20);
 
-  // while (delta >= timestep) {
-  //   update(timestep); // currently moves to the right
-  //   delta -= timestep;
-  // }
   draw();
   counter = 0;
   window.requestAnimationFrame(loop);
