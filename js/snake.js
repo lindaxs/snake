@@ -4,6 +4,7 @@ var canvas, ctx, width, height;
 var position; // x, y coordinates of snake head
 var direction; // direction of snake movement, dependent on key press
 
+var prevKey = -1;
 var left = false;
 var right = false;
 var up = false;
@@ -76,31 +77,32 @@ function move(progress) {
 function updateDirection() {
   document.addEventListener('keydown', function(event) {
 
-    if (event.keyCode == 38) { 
+    if (event.keyCode == 38 && prevKey != 40) { 
       up = true;
       down = false;
       left = false;
       right = false;
     } // up
-    else if (event.keyCode == 40) { 
+    else if (event.keyCode == 40 && prevKey != 38) { 
       up = false;
       down = true;
       left = false;
       right = false;
     } // down
-    else if (event.keyCode == 37) { 
+    else if (event.keyCode == 37 && prevKey != 39) { 
       up = false;
       down = false;
       left = true;
       right = false;
     } // left
-    else if (event.keyCode == 39) {
+    else if (event.keyCode == 39 && prevKey != 37) {
       up = false;
       down = false;
       left = false;
       right = true;
     } // right
-
+    
+    prevKey = event.keyCode;
   }); // snake's current direction
 }
 
@@ -118,6 +120,7 @@ function resetGame() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 
   // reset directions
+  prevKey = -1;
   up = false;
   down = false;
   left = false;
