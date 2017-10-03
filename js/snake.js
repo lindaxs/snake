@@ -105,7 +105,7 @@ function updateDirection() {
       right = true;
       direction = 2;
     } // right
-
+    
   }); // snake's current direction
 }
 
@@ -123,6 +123,7 @@ function resetGame() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 
   // reset directions
+  prevKey = -1;
   up = false;
   down = false;
   left = false;
@@ -220,6 +221,5 @@ function loop(timestamp) {
 }
 
 init();
-
 window.requestAnimationFrame(loop);
 
