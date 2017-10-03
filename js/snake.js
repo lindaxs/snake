@@ -2,9 +2,9 @@
 
 var canvas, ctx, width, height;
 var position; // x, y coordinates of snake head
-var direction; // direction of snake movement, dependent on key press
+// direction of snake movement, dependent on key press
+var direction = 1; // -1 is down, 0 left, 1 up, 2 right
 
-var prevKey = -1;
 var left = false;
 var right = false;
 var up = false;
@@ -77,32 +77,35 @@ function move(progress) {
 function updateDirection() {
   document.addEventListener('keydown', function(event) {
 
-    if (event.keyCode == 38 && prevKey != 40) { 
+    if (event.keyCode == 38 && !down) { 
       up = true;
       down = false;
       left = false;
       right = false;
+      direction = 1;
     } // up
-    else if (event.keyCode == 40 && prevKey != 38) { 
+    else if (event.keyCode == 40 && !up) { 
       up = false;
       down = true;
       left = false;
       right = false;
+      direction = 1;
     } // down
-    else if (event.keyCode == 37 && prevKey != 39) { 
+    else if (event.keyCode == 37 && !right) { 
       up = false;
       down = false;
       left = true;
       right = false;
+      direction = 0;
     } // left
-    else if (event.keyCode == 39 && prevKey != 37) {
+    else if (event.keyCode == 39 && !left) {
       up = false;
       down = false;
       left = false;
       right = true;
+      direction = 2;
     } // right
     
-    prevKey = event.keyCode;
   }); // snake's current direction
 }
 
@@ -138,11 +141,11 @@ function isDead() {
   var topWall = height - borderLen;
   var bottomWall = borderLen;
 
-  if (position.x == leftWall || position.x == rightWall) {
+  if (position.x <= leftWall || position.x >= rightWall) {
     return true;
   } // snake hits left or right wall
  
-  if (position.y == topWall || position.y == bottomWall) {
+  if (position.y >= topWall || position.y <= bottomWall) {
     return true;
   } // snake hits top or bottom wall
 
@@ -179,19 +182,34 @@ function draw() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 }
 
-
+// var framesThisSecond = 0;
+// var lastFpsUpdate = 0;
+var timestep = 1000 / 60;
+var fps = 60;
+var delta = 0;
+var lastRender = 0;
 /* Main loop that updates position of snake and redraws. 
  *  timestamp: current time 
  */
-function loop() {
+function loop(timestamp) {
 
 	// TODO: should be updating by 20 units at a time
 	// Need to slow Animation frame rate or it is too fast
-  update(3); // currently moves to the right
+  update(3);
+  // if (timestamp < lastRender + (1000 / fps)) {
+  //   requestAnimationFrame(loop);
+  //   return;
+  // }
+  // delta += timestamp - lastRender;
+  // lastRender = timestamp;
+
+  // while (delta >= timestep) {
+  //   update(timestep); // currently moves to the right
+  //   delta -= timestep;
+  // }
   draw();
   window.requestAnimationFrame(loop);
 }
-
 
 init();
 window.requestAnimationFrame(loop);
