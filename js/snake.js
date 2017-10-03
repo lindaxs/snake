@@ -183,10 +183,13 @@ function draw() {
 
 // var framesThisSecond = 0;
 // var lastFpsUpdate = 0;
-var timestep = 1000 / 60;
-var fps = 60;
-var delta = 0;
-var lastRender = 0;
+// var timestep = 1000 / 60;
+// var fps = 60;
+// var delta = 0;
+// var lastRender = 0;
+// var counter = 0;
+// var framesToSkip = 60;
+
 /* Main loop that updates position of snake and redraws. 
  *  timestamp: current time 
  */
@@ -194,7 +197,12 @@ function loop(timestamp) {
 
 	// TODO: should be updating by 20 units at a time
 	// Need to slow Animation frame rate or it is too fast
+  // if (counter < framesToSkip) {
+  //   counter++;
   update(3);
+  //   requestAnimationFrame(loop);
+  //   return;
+  // }
   // if (timestamp < lastRender + (1000 / fps)) {
   //   requestAnimationFrame(loop);
   //   return;
@@ -207,6 +215,7 @@ function loop(timestamp) {
   //   delta -= timestep;
   // }
   draw();
+  counter = 0;
   window.requestAnimationFrame(loop);
 }
 
