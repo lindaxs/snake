@@ -1,7 +1,12 @@
 /* Main js file that runs the game */
+// var coord = require('./coordinate.js');
+// alert(coord);
+// var Coordinate = coord.Coordinate;
 
+
+var snake; // Snake object
 var canvas, ctx, width, height;
-var position; // x, y coordinates of snake head
+// var position; // x, y coordinates of snake head
 // direction of snake movement, dependent on key press
 var direction = 1; // -1 is down, 0 left, 1 up, 2 right
 
@@ -21,8 +26,30 @@ class Coordinate {
 		this.x = x;
 		this.y = y;
 	}
-}
 
+  /* move method. 
+  * progress: distance of movement
+  */
+  move(progress) {
+    if (up) {
+      this.y -= progress;
+    }
+    else if (down) {
+      this.y += progress;
+    }
+    else if (left) {
+      this.x -= progress;
+    }
+    else if (right) {
+      this.x += progress;
+    }
+  }
+
+  // copy method
+  copy() {
+    return new Coordinate(this.x, this.y);
+  }
+}
 
 /* Gets canvas from html and puts in 2d context */
 function initializeCanvas() {
@@ -30,14 +57,43 @@ function initializeCanvas() {
 	ctx = canvas.getContext("2d");
 }
 
-
 /* Initialize canvas from html. */
 function init() {
 	initializeCanvas();
 	width = canvas.width;
 	height = canvas.height;
-	// starting position of snake
-	position = new Coordinate(width/2, height/2) 
+  snake = {
+    // starting position of snake
+    body:[new Coordinate(width/2, height/2)],
+    length:1,
+    moveBody: function(progress) {
+      // shift each body part one forward
+      for (var i = this.body.length - 1; i > 1; i--) {
+        this.body[i] = this.body[i - 1];
+      }
+      // need to copy it over, otherwise will share the same address
+      this.body[1] = this.body[0].copy();
+      // now move the head
+      this.body[0].move(progress);
+      
+      // this.body[0] = this.body[0].copy();
+      for (var i = 0; i < this.body.length; i++) {
+        console.log(this.body[i]);
+      }
+      console.log('done moving');
+
+    },
+    // for testing purposes
+    growSnake: function(num) {
+      var lastCoord = this.body[this.body.length - 1];
+      x = lastCoord.x;
+      y = lastCoord.y;
+      for (var i = 1; i < num; i++) {
+        this.body.push(new Coordinate(x - i * side, y));
+        snake.length++;
+      }
+    }
+  };
 }
 
 
@@ -46,31 +102,35 @@ function init() {
  */
 function update(progress) {
   if ( isDead() ) {
+    return;
     resetGame(); 
   }
 
   updateDirection();
-  move(progress);
+  if (up || down || left || right) {
+    snake.moveBody(progress);
+  }
+  
 }
 
 
 /* This function adds movement to the snake in a given direction
  * progress denotes movement value in px
  */
-function move(progress) {
-  if (up) {
-    position.y -= progress;
-  }
-  else if (down) {
-    position.y += progress;
-  }
-  else if (left) {
-    position.x -= progress;
-  }
-  else if (right) {
-    position.x += progress;
-  }
-}
+// function move(progress) {
+//   if (up) {
+//     position.y -= progress;
+//   }
+//   else if (down) {
+//     position.y += progress;
+//   }
+//   else if (left) {
+//     position.x -= progress;
+//   }
+//   else if (right) {
+//     position.x += progress;
+//   }
+// }
 
 
 /* This function updates snake's direction */
@@ -115,12 +175,12 @@ function resetGame() {
 
   // clear screen and reset coordinates
   ctx.clearRect(0, 0, width, height);
-  position.x = width/2;
-  position.y = height/2;
+  snake.body[0].x = width/2;
+  snake.body[0].y = height/2;
 
   // reposition snake
   ctx.fillStyle = 'red';
-  ctx.fillRect(position.x - 10, position.y - 10, side, side);
+  ctx.fillRect(snake.body[0].x - 10, snake.body[0].y - 10, side, side);
 
   // reset directions
   prevKey = -1;
@@ -141,11 +201,11 @@ function isDead() {
   var topWall = height - borderLen;
   var bottomWall = borderLen;
 
-  if (position.x <= leftWall || position.x >= rightWall) {
+  if (snake.body[0].x <= leftWall || snake.body[0].x >= rightWall) {
     return true;
   } // snake hits left or right wall
  
-  if (position.y >= topWall || position.y <= bottomWall) {
+  if (snake.body[0].y >= topWall || snake.body[0].y <= bottomWall) {
     return true;
   } // snake hits top or bottom wall
 
@@ -178,7 +238,10 @@ function draw() {
 
   // Draw snake (so far only one square).
   ctx.fillStyle = 'red';
-  ctx.fillRect(position.x - 10, position.y - 10, side, side);
+  for (var i = 0; i < snake.body.length; i++) {
+    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, side, side);
+  }
+  
 }
 
 var counter = 0;
@@ -197,7 +260,7 @@ function loop(timestamp) {
     draw();
     return; // do not proceed until 10th frame
   }
-  update(20);
+  update(side);
 
   draw();
   counter = 0;
@@ -205,5 +268,7 @@ function loop(timestamp) {
 }
 
 init();
+snake.growSnake(10);
+// draw();
 window.requestAnimationFrame(loop);
 
