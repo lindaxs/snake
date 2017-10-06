@@ -4,7 +4,7 @@
 // var Coordinate = coord.Coordinate;
 
 
-var snake; // Snake object
+var snake; // Snake object, initialized in init()
 var canvas, ctx, width, height;
 // var position; // x, y coordinates of snake head
 // direction of snake movement, dependent on key press
@@ -27,7 +27,7 @@ class Coordinate {
 		this.y = y;
 	}
 
-  /* move method. 
+  /* move method, used for the head.
   * progress: distance of movement
   */
   move(progress) {
@@ -62,10 +62,11 @@ function init() {
 	initializeCanvas();
 	width = canvas.width;
 	height = canvas.height;
+  // initialize snake object
   snake = {
     // starting position of snake
     body:[new Coordinate(width/2, height/2)],
-    length:1,
+    length:1, // starting length of just head
     moveBody: function(progress) {
       // shift each body part one forward
       for (var i = this.body.length - 1; i > 1; i--) {
@@ -75,19 +76,13 @@ function init() {
       this.body[1] = this.body[0].copy();
       // now move the head
       this.body[0].move(progress);
-      
-      // this.body[0] = this.body[0].copy();
-      for (var i = 0; i < this.body.length; i++) {
-        console.log(this.body[i]);
-      }
-      console.log('done moving');
-
     },
-    // for testing purposes
+    // for testing purposes for now
     growSnake: function(num) {
       var lastCoord = this.body[this.body.length - 1];
       x = lastCoord.x;
       y = lastCoord.y;
+      // add squares behind head
       for (var i = 1; i < num; i++) {
         this.body.push(new Coordinate(x - i * side, y));
         snake.length++;
@@ -107,6 +102,7 @@ function update(progress) {
   }
 
   updateDirection();
+  // moveBody only after key pressed
   if (up || down || left || right) {
     snake.moveBody(progress);
   }
@@ -268,7 +264,7 @@ function loop(timestamp) {
 }
 
 init();
-snake.growSnake(10);
+snake.growSnake(10); // for testing
 // draw();
 window.requestAnimationFrame(loop);
 
