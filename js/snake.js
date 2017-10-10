@@ -123,7 +123,6 @@ function resetGame() {
   ctx.fillRect(position.x - 10, position.y - 10, side, side);
 
   // reset directions
-  prevKey = -1;
   up = false;
   down = false;
   left = false;
