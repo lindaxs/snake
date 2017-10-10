@@ -51,6 +51,27 @@ class Coordinate {
   }
 }
 
+/* Snake class for snake object. */
+class Snake {
+  constructor() {
+    this.body = [new Coordinate(width/2, height/2)];
+    this.length = 1;
+  }
+
+  moveBody(progress) {
+    // shift each body part one forward
+    for (var i = this.body.length - 1; i > 1; i--) {
+      this.body[i] = this.body[i - 1];
+    }
+    // need to copy it over, otherwise will share the same address
+    if (this.body.length > 1) {
+      this.body[1] = this.body[0].copy();
+    }
+    // now move the head
+    this.body[0].move(progress);
+  }
+}
+
 /* Gets canvas from html and puts in 2d context */
 function initializeCanvas() {
 	canvas = document.getElementById("canvas");
@@ -63,41 +84,15 @@ function init() {
 	width = canvas.width;
 	height = canvas.height;
   // initialize snake object
-  snake = {
-    // starting position of snake
-    body:[new Coordinate(width/2, height/2)],
-    length:1, // starting length of just head
-    moveBody: function(progress) {
-      // shift each body part one forward
-      for (var i = this.body.length - 1; i > 1; i--) {
-        this.body[i] = this.body[i - 1];
-      }
-      // need to copy it over, otherwise will share the same address
-      this.body[1] = this.body[0].copy();
-      // now move the head
-      this.body[0].move(progress);
-    },
-    // for testing purposes for now
-    growSnake: function(num) {
-      var lastCoord = this.body[this.body.length - 1];
-      x = lastCoord.x;
-      y = lastCoord.y;
-      // add squares behind head
-      for (var i = 1; i < num; i++) {
-        this.body.push(new Coordinate(x - i * side, y));
-        snake.length++;
-      }
-    }
-  };
+  snake = new Snake();
 }
-
 
 /* Update position of snake. 
  * progress: variable of movement by _px
  */
 function update(progress) {
   if ( isDead() ) {
-    return;
+    alert('dead');
     resetGame(); 
   }
 
@@ -106,28 +101,7 @@ function update(progress) {
   if (up || down || left || right) {
     snake.moveBody(progress);
   }
-  
 }
-
-
-/* This function adds movement to the snake in a given direction
- * progress denotes movement value in px
- */
-// function move(progress) {
-//   if (up) {
-//     position.y -= progress;
-//   }
-//   else if (down) {
-//     position.y += progress;
-//   }
-//   else if (left) {
-//     position.x -= progress;
-//   }
-//   else if (right) {
-//     position.x += progress;
-//   }
-// }
-
 
 /* This function updates snake's direction */
 function updateDirection() {
@@ -165,18 +139,31 @@ function updateDirection() {
   }); // snake's current direction
 }
 
+// Called after food is eaten
+function growSnake() {
+  // Add food to head of snake
+  var headCoord = snake.body[0];
+  x = headCoord.x;
+  y = headCoord.y;
+
+  // if travelling up, add head to the top
+  if (up) {
+    snake.body.unshift(new Coordinate(x, y - side));
+  } else if (down) {
+    snake.body.unshift(new Coordinate(x, y + side));
+  } else if (left) {
+    snake.body.unshift(new Coordinate(x - side, y));
+  } else if (right) {
+    snake.body.unshift(new Coordinate(x + side, y));
+  }
+}
 
 /* Resets the game when snake dies */
 function resetGame() {
 
   // clear screen and reset coordinates
   ctx.clearRect(0, 0, width, height);
-  snake.body[0].x = width/2;
-  snake.body[0].y = height/2;
-
-  // reposition snake
-  ctx.fillStyle = 'red';
-  ctx.fillRect(snake.body[0].x - 10, snake.body[0].y - 10, side, side);
+  snake = new Snake();
 
   // reset directions
   prevKey = -1;
@@ -229,6 +216,7 @@ function createMap() {
 /* Draw the map and snake. */
 function draw() {
 
+  // Draw the map.
   ctx.clearRect(0, 0, width, height);
   createMap();
 
@@ -237,25 +225,22 @@ function draw() {
   for (var i = 0; i < snake.body.length; i++) {
     ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, side, side);
   }
-  
 }
 
 var counter = 0;
 var framesToSkip = 10;
+var truth = true;
 
-/* Main loop that updates position of snake and redraws. 
- *  timestamp: current time 
- */
-function loop(timestamp) {
+/* Main loop that updates position of snake and redraws. */
+function loop() {
 
-	// To advance the snake 20 units, we only update the 
-  // snake every 10 frames. 
+	// We only update the snake every 10 frames. 
   if (counter < framesToSkip) {
     counter++;
     requestAnimationFrame(loop);
-    draw();
     return; // do not proceed until 10th frame
   }
+  // Update the snake by 20 units.
   update(side);
 
   draw();
@@ -264,7 +249,7 @@ function loop(timestamp) {
 }
 
 init();
-snake.growSnake(10); // for testing
+// growSnake();
 // draw();
 window.requestAnimationFrame(loop);
 
