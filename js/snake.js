@@ -20,9 +20,9 @@ const side = 20; // size of each box's side
 
 
 /* Coordinate class
-* x: x coordinate
-* y: y coordinate 
-*/
+ * x: x coordinate
+ * y: y coordinate 
+ */
 class Coordinate {
 	constructor(x, y) {
 		this.x = x;
@@ -30,8 +30,8 @@ class Coordinate {
 	}
 
   /* move method, used for the head.
-  * progress: distance of movement
-  */
+   * progress: distance of movement
+   */
   move(progress) {
     if (up) {
       this.y -= progress;
@@ -52,6 +52,7 @@ class Coordinate {
     return new Coordinate(this.x, this.y);
   }
 }
+
 
 /* Snake class for snake object. */
 class Snake {
@@ -74,11 +75,13 @@ class Snake {
   }
 }
 
+
 /* Gets canvas from html and puts in 2d context */
 function initializeCanvas() {
 	canvas = document.getElementById("canvas");
 	ctx = canvas.getContext("2d");
 }
+
 
 /* Initialize canvas from html. */
 function init() {
@@ -86,7 +89,8 @@ function init() {
 
 	width = canvas.width;
 	height = canvas.height;
-  // initialize snake object
+
+  // initialize snake & food object
   snake = new Snake();
   food = createFood();
 }
@@ -186,7 +190,8 @@ function updateDirection() {
   }); // snake's current direction
 }
 
-// Called after food is eaten
+
+/* Grows snake by 1 body unit after eating food */
 function growSnake() {
   // Add food to head of snake
   var headCoord = snake.body[0];
@@ -204,6 +209,7 @@ function growSnake() {
     snake.body.unshift(new Coordinate(x + side, y));
   }
 }
+
 
 /* Resets the game when snake dies */
 function resetGame() {
@@ -242,7 +248,7 @@ function inWall(x, y) {
 }
 
 
-/* Checks whether snake has hit wall or self*/
+/* Checks whether snake has hit wall or self */
 function isDead() {
   var head_x = snake.body[0].x;
   var head_y = snake.body[0].y;
@@ -299,7 +305,7 @@ function draw() {
   drawSnake();
   drawFood();
 
-  // Draw Grid for testing purposes
+  // Draw Grid for TESTING purposes
   drawGrid();
 }
 
@@ -334,7 +340,8 @@ var counter = 0;
 var framesToSkip = 10;
 var truth = true;
 
-/* Main loop that updates position of snake and redraws. */
+
+/* Main loop that updates position of snake and redraws board elements. */
 function loop() {
 
 	// We only update the snake every 10 frames. 
