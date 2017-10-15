@@ -5,6 +5,7 @@
 
 
 var snake; // Snake object, initialized in init()
+var food;
 var canvas, ctx, width, height;
 // var position; // x, y coordinates of snake head
 // direction of snake movement, dependent on key press
@@ -16,6 +17,7 @@ var up = false;
 var down = false;
 
 const side = 20; // size of each box's side
+
 
 /* Coordinate class
 * x: x coordinate
@@ -81,16 +83,22 @@ function initializeCanvas() {
 /* Initialize canvas from html. */
 function init() {
 	initializeCanvas();
+
 	width = canvas.width;
 	height = canvas.height;
   // initialize snake object
   snake = new Snake();
+  food = createFood();
 }
+
 
 /* Update position of snake. 
  * progress: variable of movement by _px
  */
 function update(progress) {
+  var head_x = snake.body[0].x;
+  var head_y = snake.body[0].y;
+
   if ( isDead() ) {
     alert('dead');
     resetGame(); 
@@ -101,11 +109,45 @@ function update(progress) {
   if (up || down || left || right) {
     snake.moveBody(progress);
   }
+
+  if(head_x == food.x && head_y == food.y) {
+    growSnake();
+    createFood(); // assign new coordinates
+  }
 }
 
+
+/* This function randomly generates food */
+function drawFood() {
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(food.x - 10, food.y - 10, side, side);
+}
+
+
+/* Generates new food with coordinates */
 function createFood() {
+  var inValid = true;
+  
+  // validates food coordinates
+  while( inValid ) {
+    // get new coordinates 
+    var food_x = Math.floor(Math.random() * 625);
+    var food_y = Math.floor(Math.random() * 625); 
+   
+    if (!inWall(food_x, food_y)) {
+      for(var i = 0; i < snake.body.length; i++) {
+        if (food_x == snake.body[i].x && food_y == snake.body[i].y) {
+          continue;
+        } // in snake
+      } // check snake
+    } // if not in Wall, check if in snake 
 
-}
+    // at this point in loop Food coordinates are valid
+    inValid = false;
+  }
+
+  return new Coordinate(food_x, food_y);
+} 
 
 
 /* This function updates snake's direction */
@@ -178,9 +220,9 @@ function resetGame() {
 }
 
 
-/* Currently checks whether the snake has hit a wall */
-function isDead() {
-  var borderLen = 10 + side;
+/* Checks if any object hit a wall based on (x, y) coordinates */
+function inWall(x, y) {
+  var borderLen = 15 + side;
 
   // these denote the position of the wall
   var leftWall = borderLen;
@@ -188,19 +230,28 @@ function isDead() {
   var topWall = height - borderLen;
   var bottomWall = borderLen;
 
+  if (x <= leftWall || x >= rightWall) {
+    return true;
+  } // coordinate in left or right wall
+ 
+  if (y >= topWall || y <= bottomWall) {
+    return true;
+  } // coordinate in top or bottom wall
+  
+  return false; // no coordinate in walls
+}
+
+
+/* Checks whether snake has hit wall or self*/
+function isDead() {
   var head_x = snake.body[0].x;
   var head_y = snake.body[0].y;
 
-  if (head_x <= leftWall || head_x >= rightWall) {
+  // checks if snake hit a wall
+  if ( inWall(head_x, head_y) )
     return true;
-  } // snake hits left or right wall
- 
-  if (head_y >= topWall || head_y <= bottomWall) {
-    return true;
-  } // snake hits top or bottom wall
 
-  // loop through snake body and if the head has hit any other body part,
-  // snake dies
+  // loop through snake body and check for self-collisions, die if found
   for (var i = 1; i < snake.body.length; i++) {
     if (snake.body[i].x == head_x && snake.body[i].y == head_y) {
       return true;
@@ -228,19 +279,56 @@ function createMap() {
   }
 }
 
-/* Draw the map and snake. */
+
+/* Draws the snake */
+function drawSnake() {
+  ctx.fillStyle = 'red';
+  for (var i = 0; i < snake.body.length; i++) {
+    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, side, side);
+  }
+}
+
+
+/* Draw the map, snake, and food */
 function draw() {
 
   // Draw the map.
   ctx.clearRect(0, 0, width, height);
   createMap();
 
-  // Draw snake (so far only one square).
-  ctx.fillStyle = 'red';
-  for (var i = 0; i < snake.body.length; i++) {
-    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, side, side);
-  }
+  drawSnake();
+  drawFood();
+
+  // Draw Grid for testing purposes
+  drawGrid();
 }
+
+
+/* This function's purpose is solely to test for coordinate alignment 
+ * remove from main code after use
+ */
+function drawGrid() {
+  var bw = 625;
+  var bh = 625;
+
+  // +1's needed for right border consistency
+  var cw = bw + 1; 
+  var ch = bh + 1;
+
+  for (var x = 0; x <= bw; x += 25) {
+    ctx.moveTo(0.5 + x, 0);
+    ctx.lineTo(0.5 + x, bh);
+  }
+    
+  for (var x = 0; x <= bh; x += 25) {
+    ctx.moveTo(0, 0.5 + x);
+    ctx.lineTo(bw, 0.5 + x);
+  }
+
+  ctx.strokeStyle = "grey";
+  ctx.stroke();
+}
+
 
 var counter = 0;
 var framesToSkip = 10;
@@ -255,17 +343,16 @@ function loop() {
     requestAnimationFrame(loop);
     return; // do not proceed until 10th frame
   }
+
   // Update the snake by 20 units.
   update(side);
-  growSnake();
 
   draw();
   counter = 0;
   window.requestAnimationFrame(loop);
 }
 
+
 init();
-// growSnake();
-// draw();
 window.requestAnimationFrame(loop);
 
