@@ -16,7 +16,7 @@ var right = false;
 var up = false;
 var down = false;
 
-const side = 20; // size of each box's side
+const side = 25; // size of each box's side
 
 
 /* Coordinate class
@@ -124,7 +124,7 @@ function update(progress) {
 /* This function randomly generates food */
 function drawFood() {
   ctx.fillStyle = 'blue';
-  ctx.fillRect(food.x + 3, food.y + 3, side, side);
+  ctx.fillRect(food.x + 3, food.y + 3, 20, 20);
 }
 
 
@@ -290,7 +290,7 @@ function createMap() {
 function drawSnake() {
   ctx.fillStyle = 'red';
   for (var i = 0; i < snake.body.length; i++) {
-    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, side, side);
+    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, 20, 20);
   }
 }
 
@@ -351,8 +351,8 @@ function loop() {
     return; // do not proceed until 10th frame
   }
 
-  // Update the snake by 20 units.
-  update(25);
+  // Update the snake by 25 units.
+  update(side);
 
   draw();
   counter = 0;
