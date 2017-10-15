@@ -124,7 +124,7 @@ function update(progress) {
 /* This function randomly generates food */
 function drawFood() {
   ctx.fillStyle = 'blue';
-  ctx.fillRect(food.x - 10, food.y - 10, side, side);
+  ctx.fillRect(food.x + 3, food.y + 3, side, side);
 }
 
 
@@ -135,8 +135,8 @@ function createFood() {
   // validates food coordinates
   while( inValid ) {
     // get new coordinates 
-    var food_x = Math.floor(Math.random() * 625);
-    var food_y = Math.floor(Math.random() * 625); 
+    var food_x = Math.floor(Math.random() * 25) * 25;
+    var food_y = Math.floor(Math.random() * 25) * 25; 
    
     if (!inWall(food_x, food_y)) {
       for(var i = 0; i < snake.body.length; i++) {
