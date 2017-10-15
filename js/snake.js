@@ -352,7 +352,7 @@ function loop() {
   }
 
   // Update the snake by 20 units.
-  update(side);
+  update(25);
 
   draw();
   counter = 0;
