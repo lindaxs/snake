@@ -188,13 +188,24 @@ function isDead() {
   var topWall = height - borderLen;
   var bottomWall = borderLen;
 
-  if (snake.body[0].x <= leftWall || snake.body[0].x >= rightWall) {
+  var head_x = snake.body[0].x;
+  var head_y = snake.body[0].y;
+
+  if (head_x <= leftWall || head_x >= rightWall) {
     return true;
   } // snake hits left or right wall
  
-  if (snake.body[0].y >= topWall || snake.body[0].y <= bottomWall) {
+  if (head_y >= topWall || head_y <= bottomWall) {
     return true;
   } // snake hits top or bottom wall
+
+  // loop through snake body and if the head has hit any other body part,
+  // snake dies
+  for (var i = 1; i < snake.body.length; i++) {
+    if (snake.body[i].x == head_x && snake.body[i].y == head_y) {
+      return true;
+    }
+  }
 
   return false; // snake is not dead
 }
@@ -207,13 +218,13 @@ function createMap() {
   // Create top and bottom borders.
   for (i = 0; i < width; i += side) {
     ctx.fillRect(i, 0, side, side);
-    ctx.fillRect(i, height-side, side, side);
+    ctx.fillRect(i, height - side, side, side);
   }
 
   // Create left and right borders.
-  for (i = 0; i < height; i+=side) {
+  for (i = 0; i < height; i += side) {
     ctx.fillRect(0, i, side, side);
-    ctx.fillRect(width-side, i, side, side);
+    ctx.fillRect(width - side, i, side, side);
   }
 }
 
@@ -246,6 +257,7 @@ function loop() {
   }
   // Update the snake by 20 units.
   update(side);
+  growSnake();
 
   draw();
   counter = 0;
