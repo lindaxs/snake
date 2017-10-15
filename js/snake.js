@@ -103,6 +103,11 @@ function update(progress) {
   }
 }
 
+function createFood() {
+
+}
+
+
 /* This function updates snake's direction */
 function updateDirection() {
   document.addEventListener('keydown', function(event) {
