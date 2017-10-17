@@ -3,13 +3,9 @@
 // alert(coord);
 // var Coordinate = coord.Coordinate;
 
-
 var snake; // Snake object, initialized in init()
 var food;
 var canvas, ctx, width, height;
-// var position; // x, y coordinates of snake head
-// direction of snake movement, dependent on key press
-var direction = 1; // -1 is down, 0 left, 1 up, 2 right
 
 var left = false;
 var right = false;
@@ -114,16 +110,11 @@ function update(progress) {
     snake.moveBody(progress);
   }
 
+  // eating food, grow snake, regenerate food
   if(head_x == food.x && head_y == food.y) {
     growSnake();
     food = createFood(); // assign new coordinates
   }
-
-  if (head_x == food.x) {
-    console.log("hx" + head_x);
-    console.log("x" + food.x); 
-  }
-  
 }
 
 
@@ -141,7 +132,6 @@ function createFood() {
   // validates food coordinates
   while( inValid ) {
     // get new coordinates 
-    // var food_x = (width / 2) + Math.floor(((Math.random() - 1) * width) / side) * side;
     var food_x = Math.floor(Math.random() * 25) * 25; 
     var food_y = Math.floor(Math.random() * 25) * 25; 
    
@@ -159,7 +149,6 @@ function createFood() {
     // at this point in loop Food coordinates are valid
     inValid = false;
   }
-
   return new Coordinate(food_x, food_y);
 } 
 
@@ -173,28 +162,24 @@ function updateDirection() {
       down = false;
       left = false;
       right = false;
-      direction = 1;
     } // up
     else if (event.keyCode == 40 && !up) { 
       up = false;
       down = true;
       left = false;
       right = false;
-      direction = 1;
     } // down
     else if (event.keyCode == 37 && !right) { 
       up = false;
       down = false;
       left = true;
       right = false;
-      direction = 0;
     } // left
     else if (event.keyCode == 39 && !left) {
       up = false;
       down = false;
       left = false;
       right = true;
-      direction = 2;
     } // right
     
   }); // snake's current direction
@@ -334,27 +319,20 @@ function drawGrid() {
   for (var x = 0; x <= bw; x += 25) {
     ctx.moveTo(0.5 + x, 0);
     ctx.lineTo(0.5 + x, bh);
-    // ctx.moveTo(x, 0);
-    // ctx.lineTo(x, bh);
   }
     
   for (var x = 0; x <= bh; x += 25) {
     ctx.moveTo(0, 0.5 + x);
     ctx.lineTo(bh, 0.5 + x);
-    // ctx.moveTo(0, x);
-    // ctx.lineTo(bh, x);
   }
 
   ctx.strokeStyle = "grey";
   ctx.stroke();
 }
 
-
 var counter = 0;
 var framesToSkip = 10;
 var truth = true;
-
-
 /* Main loop that updates position of snake and redraws board elements. */
 function loop() {
 
@@ -373,7 +351,5 @@ function loop() {
   window.requestAnimationFrame(loop);
 }
 
-
 init();
 window.requestAnimationFrame(loop);
-
