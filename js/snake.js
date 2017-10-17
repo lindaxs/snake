@@ -57,7 +57,7 @@ class Coordinate {
 /* Snake class for snake object. */
 class Snake {
   constructor() {
-    this.body = [new Coordinate(width/2, height/2)];
+    this.body = [new Coordinate(width/2 - side/2, height/2 - side/2)];
     this.length = 1;
   }
 
@@ -116,15 +116,21 @@ function update(progress) {
 
   if(head_x == food.x && head_y == food.y) {
     growSnake();
-    createFood(); // assign new coordinates
+    food = createFood(); // assign new coordinates
   }
+
+  if (head_x == food.x) {
+    console.log("hx" + head_x);
+    console.log("x" + food.x); 
+  }
+  
 }
 
 
 /* This function randomly generates food */
 function drawFood() {
   ctx.fillStyle = 'blue';
-  ctx.fillRect(food.x + 3, food.y + 3, 20, 20);
+  ctx.fillRect(food.x, food.y, side, side);
 }
 
 
@@ -135,16 +141,20 @@ function createFood() {
   // validates food coordinates
   while( inValid ) {
     // get new coordinates 
-    var food_x = Math.floor(Math.random() * 25) * 25;
+    // var food_x = (width / 2) + Math.floor(((Math.random() - 1) * width) / side) * side;
+    var food_x = Math.floor(Math.random() * 25) * 25; 
     var food_y = Math.floor(Math.random() * 25) * 25; 
    
-    if (!inWall(food_x, food_y)) {
+    if (inWall(food_x, food_y)) {
+      continue; // if in wall, loop through again
+    } else {
+      // if not in Wall, check if in snake 
       for(var i = 0; i < snake.body.length; i++) {
         if (food_x == snake.body[i].x && food_y == snake.body[i].y) {
-          continue;
-        } // in snake
-      } // check snake
-    } // if not in Wall, check if in snake 
+          continue; // in snake, regenerate
+        } 
+      } 
+    } 
 
     // at this point in loop Food coordinates are valid
     inValid = false;
@@ -290,7 +300,7 @@ function createMap() {
 function drawSnake() {
   ctx.fillStyle = 'red';
   for (var i = 0; i < snake.body.length; i++) {
-    ctx.fillRect(snake.body[i].x - 10, snake.body[i].y - 10, 20, 20);
+    ctx.fillRect(snake.body[i].x, snake.body[i].y, side, side);
   }
 }
 
@@ -324,11 +334,15 @@ function drawGrid() {
   for (var x = 0; x <= bw; x += 25) {
     ctx.moveTo(0.5 + x, 0);
     ctx.lineTo(0.5 + x, bh);
+    // ctx.moveTo(x, 0);
+    // ctx.lineTo(x, bh);
   }
     
   for (var x = 0; x <= bh; x += 25) {
     ctx.moveTo(0, 0.5 + x);
-    ctx.lineTo(bw, 0.5 + x);
+    ctx.lineTo(bh, 0.5 + x);
+    // ctx.moveTo(0, x);
+    // ctx.lineTo(bh, x);
   }
 
   ctx.strokeStyle = "grey";
